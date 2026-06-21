@@ -13,6 +13,7 @@
 *.bmp binary
 *.mcl binary
 *.dll binary
+*.DLL binary
 *.ind binary
 *.con binary
 *.bin binary
@@ -24,12 +25,14 @@
 *.OCX binary
 *.map binary
 *.exe binary
+*.EXE binary
 *.inf binary
 
 # Declare encoding of all files for code.
 *.bas text working-tree-encoding=windows-1252
 *.cls text working-tree-encoding=windows-1252
 *.vbp text working-tree-encoding=windows-1252
+*.VBP text working-tree-encoding=windows-1252
 *.frm text working-tree-encoding=windows-1252
 *.json text working-tree-encoding=windows-1252
 *.dat text working-tree-encoding=windows-1252
