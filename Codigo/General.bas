@@ -1537,28 +1537,36 @@ Sub GuardarUsuarios()
     '***************************************************
 
     haciendoBK = True
-    
+
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Grabando Personajes", FontTypeNames.FONTTYPE_SERVER))
-    
+
     Dim i As Integer
+    Dim tInicioWorldsave As Long
+    Dim nGuardados As Long
+
+    tInicioWorldsave = GetTickCount()
+    nGuardados = 0
 
     For i = 1 To LastUser
 
         If UserList(i).flags.UserLogged Then
             Call SaveUser(i, False)
+            nGuardados = nGuardados + 1
 
         End If
 
     Next i
-    
+
     'se guardan los seguimientos
     Call SaveRecords
-    
+
     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Personajes Grabados", FontTypeNames.FONTTYPE_SERVER))
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 
     haciendoBK = False
+
+    Call LogPerf("GuardarUsuarios: " & nGuardados & " usuarios en " & (GetTickCount() - tInicioWorldsave) & " ms")
 
 End Sub
 
@@ -1599,12 +1607,17 @@ Sub SaveUser(ByVal Userindex As Integer, Optional ByVal SaveTimeOnline As Boolea
         Prom = Prom / 6
         .Reputacion.Promedio = Prom
 
+        Dim tInicioSave As Long
+        tInicioSave = GetTickCount()
+
         If Not Database_Enabled Then
             Call SaveUserToCharfile(Userindex, SaveTimeOnline)
         Else
             Call SaveUserToDatabase(Userindex, SaveTimeOnline)
 
         End If
+
+        Call LogPerf("SaveUser " & .Name & ": " & (GetTickCount() - tInicioSave) & " ms")
 
     End With
 

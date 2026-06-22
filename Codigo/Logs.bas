@@ -238,6 +238,26 @@ ErrHandler:
 
 End Sub
 
+Public Sub LogPerf(Desc As String)
+    '***************************************************
+    'Baseline T4 / Plan A+: instrumentación de tiempos de guardado.
+    '***************************************************
+
+    On Error GoTo ErrHandler
+
+    Dim nfile As Integer
+
+    nfile = FreeFile ' obtenemos un canal
+    Open App.Path & "\logs\perf.log" For Append Shared As #nfile
+    Print #nfile, Date & " " & time & " " & Desc
+    Close #nfile
+
+    Exit Sub
+
+ErrHandler:
+
+End Sub
+
 Public Sub LogTarea(Desc As String)
     '***************************************************
     'Author: Unknown

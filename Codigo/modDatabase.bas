@@ -335,6 +335,8 @@ Sub UpdateUserToDatabase(ByVal Userindex As Integer, _
 
     Call Database_Connect
 
+    Call Database_Connection.BeginTrans
+
     'Basic user data
     With UserList(Userindex)
         query = "UPDATE user SET "
@@ -585,12 +587,18 @@ Sub UpdateUserToDatabase(ByVal Userindex As Integer, _
 
     End With
 
+    Call Database_Connection.CommitTrans
+
     Call Database_Close
 
     Exit Sub
 
 ErrorHandler:
     Call LogDatabaseError("Unable to UPDATE User to Mysql Database: " & UserList(Userindex).Name & ". " & Err.Number & " - " & Err.description)
+
+    On Error Resume Next
+    Call Database_Connection.RollbackTrans
+    Call Database_Close
 
 End Sub
 
