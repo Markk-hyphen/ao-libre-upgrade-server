@@ -18,6 +18,8 @@ set "SCRIPT_DIR=%~dp0"
 set "PROJECT_DIR=%SCRIPT_DIR%.."
 set "WIN_SYSWOW64=%WINDIR%\SysWOW64"
 set "REGSVR=%WIN_SYSWOW64%\regsvr32.exe"
+set "BACKUP_DIR=%SCRIPT_DIR%backup_syswow64"
+if not exist "%BACKUP_DIR%" mkdir "%BACKUP_DIR%"
 
 echo.
 echo === 1/3: DLLs especificas del juego -> carpeta del proyecto ===
@@ -40,6 +42,12 @@ echo === 2/3: OCX/DLLs de 32 bits -> C:\Windows\SysWOW64 + registro COM ===
 :: pisarlas es innecesario y riesgoso (Windows Resource Protection puede bloquearlo igual).
 for %%F in (COMCTL32.OCX COMDLG32.OCX CSWSK32.OCX DX7VB.DLL DX8VB.DLL MSADODC.OCX MSCOMCTL.OCX MSINET.OCX MSSTDFMT.DLL MSVBVM50.DLL MSVBVM60.DLL MSWINSCK.OCX RICHTX32.OCX VBALPROGBAR6.OCX) do (
     if exist "%SCRIPT_DIR%SysWOW64\%%F" (
+        if exist "%WIN_SYSWOW64%\%%F" (
+            if not exist "%BACKUP_DIR%\%%F" (
+                copy /Y "%WIN_SYSWOW64%\%%F" "%BACKUP_DIR%\%%F" >nul
+                echo   backup de %%F existente guardado en backup_syswow64\
+            )
+        )
         copy /Y "%SCRIPT_DIR%SysWOW64\%%F" "%WIN_SYSWOW64%\" >nul
         echo   copiado %%F
     ) else (
@@ -64,5 +72,10 @@ echo.
 echo Listo. Abri SERVER.VBP en el IDE de VB6 y dale Run (F5).
 echo Si tira error de "componente no encontrado o no registrado correctamente" para algun
 echo archivo que este script saltedo a proposito (ver comentarios arriba), avisale a Claude.
+echo.
+echo Si algun archivo que ya tenias en SysWOW64 fue sobreescrito, hay copia de respaldo en
+echo %BACKUP_DIR% (se guarda solo la primera vez, no se pisa en corridas siguientes).
+echo Para revertir manualmente: copia los archivos de esa carpeta de vuelta a %WIN_SYSWOW64%
+echo y corre "regsvr32 /u archivo.ocx" si lo habias registrado.
 echo.
 pause
